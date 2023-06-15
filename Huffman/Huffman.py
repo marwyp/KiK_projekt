@@ -108,8 +108,8 @@ class DynamicHuffmanCode:
                 self.tree[ind2].parent.right = node1
 
             # SWAP parents in nodes
-            self.tree[ind1].parent = node2_parent
-            self.tree[ind2].parent = node1_parent
+            self.tree[ind1].parent = node1_parent
+            self.tree[ind2].parent = node2_parent
 
     # get nodes list
     def get_nodes(self, string=False):

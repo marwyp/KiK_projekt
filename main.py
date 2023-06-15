@@ -8,4 +8,4 @@ from Huffman.Huffman import DynamicHuffmanCode
 # print(arit_encoder.coder_static("ggb", True, {"r": 0.4, "g": 0.5, "b": 0.1}))
 
 huffman = DynamicHuffmanCode(True)
-huffman.coder("aabcdad")
+huffman.coder("aabcdadc")
