@@ -1,4 +1,5 @@
 import binarytree
+from copy import deepcopy
 
 
 class DynamicHuffmanCode:
@@ -31,7 +32,7 @@ class DynamicHuffmanCode:
             if self.show_progress:
                 print("Current version of tree:")
                 print(self.tree)
-                print(self.get_nodes())
+                print(self.get_nodes(True))
                 print(" ")
 
     # insert symbol in NYT place
@@ -50,38 +51,103 @@ class DynamicHuffmanCode:
 
     # update tree structure
     def update_tree(self):
+        # update weights
+        self.tree.update_weights()
+
+        # show progress
         if self.show_progress:
             print("Updating tree")
-        self.tree.update_weights()
-        while True:
-            tree_list = self.tree.postorder
+            print(self.tree)
+            print(self.get_nodes(True))
+
+        # update
+        flag = True
+        while flag:
+            flag = False
+            tree_list = self.get_nodes()
             for i in range(len(tree_list) - 1):
                 if tree_list[i].weight > tree_list[i + 1].weight:
-                    # TODO: swap nodes
-                    pass
-            break
+                    self.swap_nodes(i, i + 1)
+                    self.tree.update_weights()
+                    # show progress
+                    if self.show_progress:
+                        print(self.tree)
+                        print(self.get_nodes(True))
+                    flag = True
+                    break
+
         if self.show_progress:
             print("Tree updated")
 
+    # swap 2 nodes, indices from list
+    def swap_nodes(self, ind1, ind2):
+        if self.show_progress:
+            ind1 = self.list2tree_index(ind1)
+            ind2 = self.list2tree_index(ind2)
+
+            print("SWAP:", self.tree[ind1].value, self.tree[ind1].weight, "<->", self.tree[ind2].value, self.tree[ind2].weight)
+
+            # values
+            node1 = self.tree[ind1]
+            node2 = self.tree[ind2]
+            node1_parent = self.tree[ind1].parent
+            node2_parent = self.tree[ind2].parent
+
+            eq1 = node1_parent.left == node1
+            eq2 = node2_parent.left == node2
+
+            # SWAP nodes in parents
+            if eq1:
+                self.tree[ind1].parent.left = node2
+            else:
+                self.tree[ind1].parent.right = node2
+
+            if eq2:
+                self.tree[ind2].parent.left = node1
+            else:
+                self.tree[ind2].parent.right = node1
+
+            # SWAP parents in nodes
+            self.tree[ind1].parent = node2_parent
+            self.tree[ind2].parent = node1_parent
+
     # get nodes list
-    def get_nodes(self):
-        return [(node.value + " " + str(node.weight)) for node in self.tree.postorder]
+    def get_nodes(self, string=False):
+        tree_list = list()
+        levels = self.tree.levels
+        for i in range(len(levels) - 1, -1, -1):
+            for node in levels[i]:
+                tree_list.append(node)
+        if string is False:
+            return tree_list
+        else:
+            return [(node.value + " " + str(node.weight)) for node in tree_list]
 
     # get node using symbol
     def get_node(self, symbol):
         node_to_return = None
-        for node in self.tree.postorder:
+        for node in self.get_nodes():
             if node.value == symbol:
                 node_to_return = node
                 break
         return node_to_return
 
+    # converts indexes from list to index from tree class
+    def list2tree_index(self, index):
+        desired_element = self.get_nodes()[index]
+        # self.tree.pprint(index=True)
+        # print(self.tree.values)
+        for i in range(len(self.tree.values)):
+            if self.tree.values[i] is not None:
+                if desired_element == self.tree[i]:
+                    return i
 
 class AdaptiveHuffmanNode(binarytree.Node):
     def __init__(self, symbol, weight, parent=None):
         super().__init__(symbol)
         self.weight = weight
         self.parent = parent
+        self.index = 0
 
     def update_weights(self):
         # update weights
@@ -92,6 +158,7 @@ class AdaptiveHuffmanNode(binarytree.Node):
 
         # update weight
         self.weight = self.left.weight + self.right.weight
+
 
 
 
