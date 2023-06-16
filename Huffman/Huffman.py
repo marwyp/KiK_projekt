@@ -51,6 +51,35 @@ class DynamicHuffmanCode:
                 print(" ")
         return coded_word
 
+    # decode given word with adaptive Huffman Code
+    def decoder(self, word: str):
+        decoded_word = ""
+        i = 0
+        while i < len(word):
+            # check if NYT is prefix for next letter
+            len_of_nyt = len(self.get_symbol_code("NYT"))
+            if word[i:i + len_of_nyt] == self.get_symbol_code("NYT"):
+                # get letter from auxiliary code
+                letter = DynamicHuffmanCode.get_letter_from_auxiliary_code(word[i + len_of_nyt:i + len_of_nyt + 8])
+                i += len_of_nyt + 8
+                # insert letter to tree
+                self.insert_new_node(letter)
+                decoded_word += letter
+            else:
+                # loop adding next bits and check if this is in tree
+                j = 1
+                while True:
+                    # get letter
+                    letter = self.get_letter_from_code(word[i:i + j])
+                    if letter is not None and letter != "node":
+                        i += j
+                        # update letter in tree
+                        self.update_node(self.get_node(letter))
+                        decoded_word += letter
+                        break
+                    j += 1
+
+        return decoded_word
     # insert symbol in NYT place
     def insert_new_node(self, symbol):
         nyt = self.get_node("NYT")
@@ -184,6 +213,14 @@ class DynamicHuffmanCode:
                 return right_code
             return None
 
+    def get_letter_from_code(self, code):
+        tree = self.tree
+        for i in range(len(code)):
+            if code[i] == "0":
+                tree = tree.left
+            else:
+                tree = tree.right
+        return tree.value
     # returns auxiliary code from given symbol
     @staticmethod
     def get_auxiliary_code(symbol, code=None):
@@ -196,6 +233,12 @@ class DynamicHuffmanCode:
         else:
             return symbol
 
+    @staticmethod
+    def get_letter_from_auxiliary_code(code):
+        if len(code) == 1:
+            return code
+        else:
+            return chr(int(code, 2))
     # returns ASCII of given symbol
     @staticmethod
     def get_ascii_code(symbol, mode=7):
