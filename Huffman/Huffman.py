@@ -1,39 +1,55 @@
 import binarytree
-from copy import deepcopy
 
 
 class DynamicHuffmanCode:
-    def __init__(self, show_progress=False):
+    def __init__(self, auxiliary_code=None, show_progress=False):
+        # initial variables
         self.show_progress = show_progress
         self.tree = AdaptiveHuffmanNode("NYT", 0)
+        self.auxiliary_code = auxiliary_code
+
+        # show progress
         if self.show_progress:
             print("-----------Initialized tree-----------")
             print(self.tree)
+
+    # reset tree
+    def reset(self):
+        self.tree = AdaptiveHuffmanNode("NYT", 0)
 
     # code given word with adaptive Huffman Code
     def coder(self, word: str):
         coded_word = ""
         for letter in word:
-            # code word
-            coded_word += letter
-
             # print progress
             if self.show_progress:
                 print("----------Current letter:", letter, "----------")
-                print("Codded word:", coded_word)
 
             # update tree
             old_node = self.get_node(letter)
             if old_node is None:
+                # send NYT and letter in auxiliary code
+                coded_word += (self.get_symbol_code("NYT") + DynamicHuffmanCode.get_auxiliary_code(letter,
+                                                                                                   self.auxiliary_code))
+                if self.show_progress:
+                    print("Codded word:", coded_word)
+                # insert letter to tree
                 self.insert_new_node(letter)
             else:
+                # send letter
+                coded_word += self.get_symbol_code(letter)
+                if self.show_progress:
+                    print("Codded word:", coded_word)
+                # update letter in tree
                 self.update_node(old_node)
 
+            # show progress
             if self.show_progress:
                 print("Current version of tree:")
                 print(self.tree)
                 print(self.get_nodes(True))
                 print(" ")
+        return coded_word
 
     # insert symbol in NYT place
     def insert_new_node(self, symbol):
@@ -81,35 +97,38 @@ class DynamicHuffmanCode:
 
     # swap 2 nodes, indices from list
     def swap_nodes(self, ind1, ind2):
+        # convert indices
+        ind1 = self.list2tree_index(ind1)
+        ind2 = self.list2tree_index(ind2)
+
+        # show progress
         if self.show_progress:
-            ind1 = self.list2tree_index(ind1)
-            ind2 = self.list2tree_index(ind2)
+            print("SWAP:", self.tree[ind1].value, self.tree[ind1].weight, "<->", self.tree[ind2].value,
+                  self.tree[ind2].weight)
 
-            print("SWAP:", self.tree[ind1].value, self.tree[ind1].weight, "<->", self.tree[ind2].value, self.tree[ind2].weight)
+        # values
+        node1 = self.tree[ind1]
+        node2 = self.tree[ind2]
+        node1_parent = self.tree[ind1].parent
+        node2_parent = self.tree[ind2].parent
 
-            # values
-            node1 = self.tree[ind1]
-            node2 = self.tree[ind2]
-            node1_parent = self.tree[ind1].parent
-            node2_parent = self.tree[ind2].parent
+        eq1 = node1_parent.left == node1
+        eq2 = node2_parent.left == node2
 
-            eq1 = node1_parent.left == node1
-            eq2 = node2_parent.left == node2
+        # SWAP nodes in parents
+        if eq1:
+            self.tree[ind1].parent.left = node2
+        else:
+            self.tree[ind1].parent.right = node2
 
-            # SWAP nodes in parents
-            if eq1:
-                self.tree[ind1].parent.left = node2
-            else:
-                self.tree[ind1].parent.right = node2
+        if eq2:
+            self.tree[ind2].parent.left = node1
+        else:
+            self.tree[ind2].parent.right = node1
 
-            if eq2:
-                self.tree[ind2].parent.left = node1
-            else:
-                self.tree[ind2].parent.right = node1
-
-            # SWAP parents in nodes
-            self.tree[ind1].parent = node1_parent
-            self.tree[ind2].parent = node2_parent
+        # SWAP parents in nodes
+        self.tree[ind1].parent = node1_parent
+        self.tree[ind2].parent = node2_parent
 
     # get nodes list
     def get_nodes(self, string=False):
@@ -142,6 +161,54 @@ class DynamicHuffmanCode:
                 if desired_element == self.tree[i]:
                     return i
 
+    # get symbol code from tree
+    def get_symbol_code(self, symbol, tree=None, code=""):
+        if tree is None:
+            # tree is NYT only
+            if len(self.tree) == 1:
+                return "0"
+            # else tree is the whole tree
+            tree = self.tree
+        if tree.value == symbol:
+            return code
+        else:
+            left_code = None
+            right_code = None
+            if tree.left is not None:
+                left_code = self.get_symbol_code(symbol, tree.left, code + "0")
+            if tree.right is not None:
+                right_code = self.get_symbol_code(symbol, tree.right, code + "1")
+            if left_code is not None:
+                return left_code
+            if right_code is not None:
+                return right_code
+            return None
+
+    # returns auxiliary code from given symbol
+    @staticmethod
+    def get_auxiliary_code(symbol, code=None):
+        if code is None:
+            return symbol
+        elif code == "ASCII" or code == "ASCII-8":
+            return DynamicHuffmanCode.get_ascii_code(symbol, 8)
+        elif code == "ASCII-7":
+            return DynamicHuffmanCode.get_ascii_code(symbol, 7)
+        else:
+            return symbol
+
+    # returns ASCII of given symbol
+    @staticmethod
+    def get_ascii_code(symbol, mode=7):
+        if mode != 7 and mode != 8:
+            raise Exception
+        ascii_code = ord(symbol)
+        ascii_code = format(ascii_code, 'b')
+        while len(ascii_code) != mode:
+            ascii_code = "0" + ascii_code
+        return ascii_code
+
+
+# Huffman Binary Tree Node with weight
 class AdaptiveHuffmanNode(binarytree.Node):
     def __init__(self, symbol, weight, parent=None):
         super().__init__(symbol)
