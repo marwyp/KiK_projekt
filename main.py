@@ -3,13 +3,11 @@ from Kodowanie_Arytmetyczne.Koder.koder_arytmetyczny import ArithmeticCoder
 from Kodowanie_Arytmetyczne.traffic_generator import symbols_generator
 
 arit_encoder = ArithmeticCoder()
-print(arit_encoder.coder_adaptive(symbols_generator(10)))
-# arit_encoder.coder_adaptive(symbols_generator(10), True))
-# arit_encoder.coder_static("abc", True)
+# arit_encoder.coder_static("abc", visualize=True)
 # print(arit_encoder.coder_static(symbols_generator(10)))
-# print(arit_encoder.coder_static("ggb", True, {"r": 0.4, "g": 0.5, "b": 0.1}))
+print(arit_encoder.coder_static("ggb", visualize=True, custom_prob={"r": 0.4, "g": 0.5, "b": 0.1}))
 
-# Huffman Coding Exampels
+# Huffman Coding Examples
 huffman = DynamicHuffmanCode(auxiliary_code="ASCII", show_progress=True)
 huffman2 = DynamicHuffmanCode(auxiliary_code=None, show_progress=False)
 

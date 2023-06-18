@@ -9,7 +9,6 @@ class ArithmeticCoder:
 
     # source: https://www.youtube.com/watch?v=FdMoL3PzmSA
     # https://go-compression.github.io/algorithms/arithmetic/
-    # chat nie pomógł :/
     # constructor
     def __init__(self):
         self.all_char_counter = 0
@@ -20,6 +19,7 @@ class ArithmeticCoder:
         self.right_boundary = Decimal(1)
         self.tag = (self.left_boundary + self.right_boundary)/2
 
+    """
     def coder_adaptive(self, text, visualize=False):
 
         self.clean_cache()
@@ -74,7 +74,7 @@ class ArithmeticCoder:
                 input()
 
         return "<" + str(self.left_boundary) + ", " + str(self.right_boundary) + ")"
-
+    """
     def coder_static(self, text, visualize=False, custom_prob={}):
 
         self.clean_cache()
@@ -123,6 +123,18 @@ class ArithmeticCoder:
                 print("right boundary: " + str(self.right_boundary))
                 print("encoded range: <" + str(self.left_boundary) + ", " + str(self.right_boundary) + ")")
                 print("################################################")
+                for _ in range(50):
+                    print("-", end="")
+                print("\n", end="")
+                for key in self.freq_table.keys():
+                    print("|", end="")
+                    print(key * round((self.freq_table[key]/self.all_char_counter)*50), end="")
+                    print("|", end="")
+                print("\n", end="")
+                for _ in range(50):
+                    print("-", end="")
+                print("\n", end="")
+                print()
                 input()
 
         if visualize:
