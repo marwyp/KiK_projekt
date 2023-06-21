@@ -1,12 +1,19 @@
 
 from decimal import Decimal
+import decimal
 from Huffman.Huffman import DynamicHuffmanCode
 from Kodowanie_Arytmetyczne.Koder.koder_arytmetyczny import ArithmeticCoder
 from Kodowanie_Arytmetyczne.traffic_generator import symbols_generator
 
+decimal.getcontext().prec = 100
+
 arit_encoder = ArithmeticCoder()
 # arit_encoder.coder_static("abc", visualize=True)
 # print(arit_encoder.coder_static(symbols_generator(10)))
+print(arit_encoder.coder_static("Nam strzelać nie kazano, wstąpiłem na działo, spojrzałem na pole",
+                                visualize=True))
+print(arit_encoder.dekoder_static(Decimal("0.0005404236959187570571905387605234841961254851980158723"
+                                          "058181144560520507746422")))
 print(arit_encoder.coder_static("ggb", visualize=True,
                                 custom_prob={"r": Decimal(0.4), "g": Decimal(0.5), "b": Decimal(0.1)}))
 print(arit_encoder.dekoder_static(Decimal(0.83)))
@@ -40,3 +47,4 @@ print("Decoded: ", decoded_word, "\n")
 print("---------Example 2---------\n", word2, ":", coded_word2)
 print("", word2, ":", coded_word2_2, "\n")
 print("Decoded: ", decoded_word_2, "\n")
+

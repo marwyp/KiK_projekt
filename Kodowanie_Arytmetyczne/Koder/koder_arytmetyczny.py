@@ -18,6 +18,8 @@ class ArithmeticCoder:
 
     def coder_static(self, text, visualize=False, custom_prob={}):
 
+        assert len(text) <= 82, "Provided text is too long"
+
         self.clean_cache()
 
         # update freq table
@@ -94,13 +96,14 @@ class ArithmeticCoder:
         self.right_boundary = 1
 
     # decoding, r- chosen value between boundaries
-    def dekoder_static(self, r: Decimal):
+    def dekoder_static(self, r):
 
         # local variables
         process_left_boundary = Decimal(0)
         process_right_boundary = Decimal(1)
         cumulative_boundary = {}
         string_to_return = ""
+        r = Decimal(r)
 
         # check if value is valid
         assert self.left_boundary <= r < self.right_boundary, "r should be between left and right boundary (inclusive)"
