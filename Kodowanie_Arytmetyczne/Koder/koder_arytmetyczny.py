@@ -120,8 +120,6 @@ class ArithmeticCoder:
                                                   "right": temp_left_boundary + range_of_symbol}
                 temp_left_boundary = temp_left_boundary + range_of_symbol
 
-            # check in which boundaries r falls and change boundaries
-            for temp_char in cumulative_boundary.keys():
                 if cumulative_boundary[temp_char]["left"] < r < cumulative_boundary[temp_char]["right"]:
                     string_to_return = string_to_return + temp_char
                     process_left_boundary = cumulative_boundary[temp_char]["left"]
