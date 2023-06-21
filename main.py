@@ -1,3 +1,5 @@
+
+from decimal import Decimal
 from Huffman.Huffman import DynamicHuffmanCode
 from Kodowanie_Arytmetyczne.Koder.koder_arytmetyczny import ArithmeticCoder
 from Kodowanie_Arytmetyczne.traffic_generator import symbols_generator
@@ -5,7 +7,9 @@ from Kodowanie_Arytmetyczne.traffic_generator import symbols_generator
 arit_encoder = ArithmeticCoder()
 # arit_encoder.coder_static("abc", visualize=True)
 # print(arit_encoder.coder_static(symbols_generator(10)))
-print(arit_encoder.coder_static("ggb", visualize=True, custom_prob={"r": 0.4, "g": 0.5, "b": 0.1}))
+print(arit_encoder.coder_static("ggb", visualize=True,
+                                custom_prob={"r": Decimal(0.4), "g": Decimal(0.5), "b": Decimal(0.1)}))
+print(arit_encoder.dekoder_static(Decimal(0.83)))
 
 # Huffman Coding Examples
 huffman = DynamicHuffmanCode(auxiliary_code="ASCII", show_progress=True)

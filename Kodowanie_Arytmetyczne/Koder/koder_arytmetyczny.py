@@ -1,9 +1,5 @@
-
 import decimal
 from decimal import Decimal
-
-decimal.getcontext().prec = 100
-
 
 class ArithmeticCoder:
 
@@ -18,6 +14,7 @@ class ArithmeticCoder:
         self.left_boundary = Decimal(0)
         self.right_boundary = Decimal(1)
         self.tag = (self.left_boundary + self.right_boundary)/2
+        decimal.getcontext().prec = 100
 
     def coder_static(self, text, visualize=False, custom_prob={}):
 
@@ -95,3 +92,45 @@ class ArithmeticCoder:
         self.received_string = ""
         self.left_boundary = 0
         self.right_boundary = 1
+
+    # decoding, r- chosen value between boundaries
+    def dekoder_static(self, r: Decimal):
+
+        # local variables
+        process_left_boundary = Decimal(0)
+        process_right_boundary = Decimal(1)
+        cumulative_boundary = {}
+        string_to_return = ""
+
+        # check if value is valid
+        assert self.left_boundary <= r < self.right_boundary, "r should be between left and right boundary (inclusive)"
+
+        # check if the probability table was provided
+        assert len(self.probability_table) != 0, "probability table was not provided"
+
+        # process data
+        while 1:
+            temp_left_boundary = process_left_boundary
+
+            # update cumulative boundaries
+            for temp_char in self.probability_table.keys():
+                prob_of_symbol = self.probability_table[temp_char]
+                range_of_symbol = (process_right_boundary - process_left_boundary) * prob_of_symbol
+                cumulative_boundary[temp_char] = {"left": temp_left_boundary,
+                                                  "right": temp_left_boundary + range_of_symbol}
+                temp_left_boundary = temp_left_boundary + range_of_symbol
+
+            # check in which boundaries r falls and change boundaries
+            for temp_char in cumulative_boundary.keys():
+                if cumulative_boundary[temp_char]["left"] < r < cumulative_boundary[temp_char]["right"]:
+                    string_to_return = string_to_return + temp_char
+                    process_left_boundary = cumulative_boundary[temp_char]["left"]
+                    process_right_boundary = cumulative_boundary[temp_char]["right"]
+                    break
+
+            # end if boundaries were meet
+            if self.left_boundary.compare(process_left_boundary) == 0 and \
+                    self.right_boundary.compare(process_right_boundary) == 0:
+                break
+
+        return "Decoded string: " + string_to_return
