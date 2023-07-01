@@ -1,4 +1,5 @@
 import zipfile
+
 from Huffman.Huffman import DynamicHuffmanCode
 from Kodowanie_Arytmetyczne.Koder.koder_arytmetyczny import ArithmeticCoder
 
@@ -11,12 +12,12 @@ with open('cantrbry/alice29.txt', encoding='utf8') as f:
 f.close()
 
 text_alice = text.upper()
-text_alice = text_alice[121:6122]
+text_alice = text_alice[250:6250]
 ala = "Ala ma kota"
 
 # arithmetic coding
 arit_encoder = ArithmeticCoder()
-tag = arit_encoder.coder_static(text_alice)
+tag = arit_encoder.coder_static(text_alice, visualize=True)
 print(arit_encoder.dekoder_static(tag))
 
 # Huffman Coding Examples
@@ -48,6 +49,7 @@ print("Decoded: ", decoded_word, "\n")
 print("---------Example 2---------\n", word2, ":", coded_word2)
 print("", word2, ":", coded_word2_2, "\n")
 print("Decoded: ", decoded_word_2, "\n")
+
 
 
 
